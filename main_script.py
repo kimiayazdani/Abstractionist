@@ -30,7 +30,9 @@ def generate_weighted_string(text, repeat=3):
     entities = [e[0] for e in entities] 
     weighted_concepts = ' '.join(concepts * repeat)
     weighted_entities = ' '.join(entities * repeat)
-    return ' '.join([preprocess(text), weighted_concepts, weighted_entities])
+
+
+    return ' '.join([' '.join(preprocess(text)), weighted_concepts, weighted_entities])
 
 
 def link_abstract_sentences_to_paragraphs(abstract, full_text):
