@@ -36,7 +36,7 @@ def generate_weighted_string(text, repeat=3):
 
 
 def link_abstract_sentences_to_paragraphs(abstract, full_text):
-    paragraphs = full_text.split('\n')
+    paragraphs = full_text.replace('.\n','\b**b').replace('-\n', '').replace('\n', ' ').split('\b**b')
     abstract_sentences = list(nlp(abstract).sents)
     
     abstract_sentences = [generate_weighted_string(sentence.text) for sentence in abstract_sentences]
