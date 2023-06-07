@@ -8,7 +8,9 @@ import numpy as np
 
 def get_clean_text(paper_id):
     
-    search = arxiv.Search(id_list=["2111.11418v1"])
+    # search = arxiv.Search(id_list=["2111.11418v1"])
+    search = arxiv.Search(id_list=[paper_id])
+
     papers = next(search.results())
     print(papers.title)
 
@@ -34,9 +36,12 @@ def get_clean_text(paper_id):
             text += page.extract_text()
 
 
-        cleaned_text = text[:text.index('Abstract')] + text[text.index('Introduction'):]
+        last_index = paper.summary[:50]
 
-        print(cleaned_text)#print(text)
+        # cleaned_text = text[:text.index('Abstract')] + text[text.index('Introduction'):]
+        cleaned_text = text[text.index(last_index)+len(paper.summary)-50:]
+
+        # print(cleaned_text)#print(text)
         
         return cleaned_text, paper.summary
 
