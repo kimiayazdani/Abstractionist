@@ -39,8 +39,14 @@ def link_abstract_sentences_to_paragraphs(abstract, full_text):
     paragraphs = full_text.replace('.\n','\b**b').replace('-\n', '').replace('\n', ' ').split('\b**b')
     abstract_sentences = list(nlp(abstract).sents)
     
+    abstract_sentences_wo_preprocessing = list(abstract_sentences)
+    paragraphs_wo_preprocessing = list(paragraphs)
+    
     abstract_sentences = [generate_weighted_string(sentence.text) for sentence in abstract_sentences]
     paragraphs = [generate_weighted_string(para) for para in paragraphs]
+    
+ #   abstract_sentences_wo_preprocessing = 
+ #   paragraphs_wo_preprocessing = {i: paragraph for i, paragraph in enumerate(full_text.split('\n'))}
 
     corpus = abstract_sentences + paragraphs
 
@@ -49,15 +55,22 @@ def link_abstract_sentences_to_paragraphs(abstract, full_text):
     vectorizer.fit(corpus)
 
     sentence_paragraph_scores = {}
-    for sentence in abstract_sentences:
+    sentence_paragraph_scores_wo = {}
+    for i,sentence in enumerate(abstract_sentences):
         sentence_vector = vectorizer.transform([sentence]).toarray()
         paragraph_scores = {}
-        for para in paragraphs:
+        paragraph_scores_wo = {}
+        for j,para in enumerate(paragraphs):
             para_vector = vectorizer.transform([para]).toarray()
             similarity = cosine_similarity(sentence_vector, para_vector)
-            paragraph_scores[para] = similarity[0][0]  
+            paragraph_scores[(j,para)] = similarity[0][0]  
+            paragraph_scores_wo[(j,paragraphs_wo_preprocessing[j])] = similarity[0][0]
 
         sorted_paragraph_scores = sorted(paragraph_scores.items(), key=lambda x: x[1], reverse=True)
-        sentence_paragraph_scores[sentence] = sorted_paragraph_scores
+        sentence_paragraph_scores[(i,sentence)] = sorted_paragraph_scores[:3]
+        sorted_paragraph_scores_wo = sorted(paragraph_scores_wo.items(), key=lambda x: x[1], reverse=True)
+        sentence_paragraph_scores_wo[0] = sorted_paragraph_scores_wo[:3]
+    
+    return sentence_paragraph_scores_wo, paragraphs_wo_preprocessing
 
-    return sentence_paragraph_scores
+
